@@ -26,6 +26,20 @@ async def mute_user(message: types.Message):
     if not message.reply_to_message:
         return
 
+    admin = next(
+        (
+            u for u in await bot.get_chat_administrators(message.chat.id)
+            if u.user.id == message.from_user.id
+        ),
+        None
+    )
+
+    if not admin:
+        return
+
+    if not admin.can_restrict_members:
+        return
+
     now = datetime.now()
     duration = parse_duration(message.text)
 
