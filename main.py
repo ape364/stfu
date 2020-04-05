@@ -21,23 +21,22 @@ dp = Dispatcher(bot)
 REGEX_MUTE = re.compile(r'!m\s(\d+)([mhd])')
 
 
+async def check_user_can_restrict(message: types.Message) -> bool:
+    chat_admins = await bot.get_chat_administrators(message.chat.id)
+
+    for admin in chat_admins:
+        if message.from_user.id == admin.user.id:
+            if admin.can_restrict_members is True or admin.status == 'creator':
+                return True
+    return False
+
+
 @dp.message_handler(regexp=REGEX_MUTE)
 async def mute_user(message: types.Message):
     if not message.reply_to_message:
         return
 
-    admin = next(
-        (
-            u for u in await bot.get_chat_administrators(message.chat.id)
-            if u.user.id == message.from_user.id
-        ),
-        None
-    )
-
-    if not admin:
-        return
-
-    if not admin.can_restrict_members:
+    if not await check_user_can_restrict(message):
         return
 
     now = datetime.now()
