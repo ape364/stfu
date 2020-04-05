@@ -64,10 +64,10 @@ async def mute_user(message: types.Message):
         )
     except Exception as e:
         logger.exception('Unable to restrict')
-        await message.reply(f'Unable to restrict ({type(e).__name__}): {e}')
+        await message.reply(f'Unable to mute ({type(e).__name__}): {e}')
     else:
         logger.info(f'Restricted {reply.from_user.to_python()} until {restrict_until}')
-        await message.reply(f'User restricted until {restrict_until.ctime()}')
+        await message.reply(f'Muted until {restrict_until.ctime()}')
 
 
 def parse_duration(duration: str) -> int:
